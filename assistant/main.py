@@ -4,7 +4,6 @@ from gtts import gTTS # google text to speech
 import random
 from time import ctime # get time details
 import webbrowser # open browser
-# import yfinance as yf # to fetch financial data
 import ssl
 import certifi
 import time
@@ -14,13 +13,6 @@ from newsapi import NewsApiClient
 
 import pprint
 import requests 
-
-
-# newsapi = NewsApiClient(api_key='2689061e28344f46bde8a8dbcfdb119b')
-# top_headlines = newsapi.get_top_headlines(sources='bbc-news')
-
-        
-# print(top_headlines)
 
 
 
@@ -34,6 +26,7 @@ def there_exists(terms):
         if term in voice_data:
             return True
 
+
 def get_news():
     url = 'https://newsapi.org/v2/everything?'
     secret = '2689061e28344f46bde8a8dbcfdb119b'
@@ -44,7 +37,6 @@ def get_news():
     }
 
     response = requests.get(url, params=parameters)
-
     # Convert the response to JSON format and pretty print it
     response_json = response.json()
     # pprint.pprint(response_json)
@@ -53,6 +45,9 @@ def get_news():
         news= news + i['title']
     
     return news
+
+
+
 
 r = sr.Recognizer() # initialise a recogniser
 # listen for audio and convert it to text:
