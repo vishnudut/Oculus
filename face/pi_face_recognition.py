@@ -7,7 +7,11 @@ import imutils
 import pickle
 import time
 import cv2
-import pyttsx3 as pt
+# import pyttsx3 as pt
+from gtts import gTTS
+import os
+import playsound
+import random
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--cascade", required=True,
@@ -16,11 +20,12 @@ ap.add_argument("-e", "--encodings", required=True,
 	help="path to serialized db of facial encodings")
 args = vars(ap.parse_args())
 
-engine = pt.init()
+
 
 print("[INFO] loading encodings + face detector...")
 data = pickle.loads(open(args["encodings"], "rb").read())
 detector = cv2.CascadeClassifier(args["cascade"])
+
 
 # initialize the video stream and allow the camera sensor to warm up
 print("[INFO] starting video stream...")
@@ -28,6 +33,16 @@ vs = VideoStream(src=0).start()
 time.sleep(2.0)
 fps = FPS().start()
 
+def speak(audio_string):
+	tts = gTTS(text=audio_string, lang='en')
+	r = random.randint(1,100000000)
+	audio_file = 'audio-' + str(r) + '.mp3'
+	tts.save(audio_file)
+	playsound.playsound(audio_file)
+	print(audio_string)
+	os.remove(audio_file)
+
+names = []
 # loop over frames from the video file stream
 while True:
 	frame = vs.read()
@@ -48,7 +63,7 @@ while True:
 
 	# compute the facial embeddings for each face bounding box
 	encodings = face_recognition.face_encodings(rgb, boxes)
-	names = []
+	
 
 	# loop over the facial embeddings
 	for encoding in encodings:
@@ -71,7 +86,6 @@ while True:
 				counts[name] = counts.get(name, 0) + 1
 
 			name = max(counts, key=counts.get)
-		
 		# update the list of names
 		names.append(name)
 
@@ -88,14 +102,13 @@ while True:
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
 	#to print the names
-	engine.say(names[0])
-	engine.runAndWait()
+
 	if key == ord("q"):
 		break
 
 	# update the FPS counter
 	fps.update()
-	
+
 
 fps.stop()
 print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
