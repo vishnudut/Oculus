@@ -26,14 +26,23 @@ def there_exists(terms):
         if term in voice_data:
             return True
 
+def get_waeather():
+    api_address='http://api.openweathermap.org/data/2.5/weather?appid=0c42f7f6b53b244c78a418f4f181282a&q='
+    city = input('City Name :')
+    url = api_address + city
+    json_data = requests.get(url).json()
+    format_add = json_data['weather'][0]['description']
+    print(format_add)
+
+get_waeather()
 
 def get_news():
     url = 'https://newsapi.org/v2/everything?'
-    secret = '2689061e28344f46bde8a8dbcfdb119b'
+    news_api = '2689061e28344f46bde8a8dbcfdb119b'
     parameters = {
         'q': 'big data', # query phrase
         'pageSize': 20,  # maximum is 100
-        'apiKey': secret # your own API key
+        'apiKey': news_api # your own API key
     }
 
     response = requests.get(url, params=parameters)
@@ -134,7 +143,6 @@ def respond(voice_data):
 
         speak("The computer chose " + cmove)
         speak("You chose " + pmove)
-        #speak("hi")
         if pmove==cmove:
             speak("the match is draw")
         elif pmove== "rock" and cmove== "scissor":
