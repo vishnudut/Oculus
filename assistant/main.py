@@ -26,15 +26,15 @@ def there_exists(terms):
         if term in voice_data:
             return True
 
-def get_waeather():
-    api_address='http://api.openweathermap.org/data/2.5/weather?appid=0c42f7f6b53b244c78a418f4f181282a&q='
-    city = input('City Name :')
+def get_weather():
+    api_address='http://api.openweathermap.org/data/2.5/weather?appid=74c70cbf155ba874808f72c02696bad9&q='
+    city = 'Chennai'
     url = api_address + city
     json_data = requests.get(url).json()
     format_add = json_data['weather'][0]['description']
     print(format_add)
+    return format_add
 
-get_waeather()
 
 def get_news():
     url = 'https://newsapi.org/v2/everything?'
@@ -168,6 +168,11 @@ def respond(voice_data):
     if there_exists(["news","what's the news","read the news","what is the news","read news"]):
         news = get_news()
         speak(news)
+
+    if there_exists(["what's the weather today","weather","today's weather"]):
+        weather = get_weather()
+        print(weather)
+        speak(f'According the weather report it will be {weather}')
         
 
     if there_exists(["exit", "quit", "goodbye"]):
