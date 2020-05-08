@@ -31,9 +31,13 @@ def get_weather():
     city = 'Chennai'
     url = api_address + city
     json_data = requests.get(url).json()
-    format_add = json_data['weather'][0]['description']
+    format_add = json_data['weather'][0]['description'];
+    current_temp = json_data['main']['temp']
+    temp_c = current_temp - 273.15
+    temp_c_str = str(int(temp_c)) + ' degree Celsius '
+    print(temp_c)
     print(format_add)
-    return format_add
+    return format_add, temp_c_str
 
 
 def get_news():
@@ -171,8 +175,8 @@ def respond(voice_data):
 
     if there_exists(["what's the weather today","weather","today's weather"]):
         weather = get_weather()
-        print(weather)
-        speak(f'According the weather report it will be {weather}')
+        print(weather[0])
+        speak(f'According the weather report it will be {weather[0]} and the temprature is {weather[1]}')
         
 
     if there_exists(["exit", "quit", "goodbye"]):
