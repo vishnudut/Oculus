@@ -10,6 +10,7 @@ import time
 import os # to remove created audio files
 import wikipedia
 from newsapi import NewsApiClient
+import pyttsx3
 
 import pprint
 import requests 
@@ -25,6 +26,17 @@ def there_exists(terms):
     for term in terms:
         if term in voice_data:
             return True
+
+
+def speak(audio_string):
+    tts = gTTS(text=audio_string, lang='en') # text to speech(voice)
+    r = random.randint(1,20000000)
+    audio_file = 'audio' + str(r) + '.mp3'
+    tts.save(audio_file) # save as mp3
+    playsound.playsound(audio_file) # play the audio file
+    print(f"jarvis: {audio_string}") # print what app said
+    os.remove(audio_file) # remove audio file
+
 
 def get_weather():
     api_address='http://api.openweathermap.org/data/2.5/weather?appid=74c70cbf155ba874808f72c02696bad9&q='
@@ -60,8 +72,6 @@ def get_news():
     return news
 
 
-
-
 r = sr.Recognizer() # initialise a recogniser
 # listen for audio and convert it to text:
 def record_audio(ask=False):
@@ -80,14 +90,17 @@ def record_audio(ask=False):
         return voice_data.lower()
 
 # get string and make a audio file to be played
-def speak(audio_string):
-    tts = gTTS(text=audio_string, lang='en') # text to speech(voice)
-    r = random.randint(1,20000000)
-    audio_file = 'audio' + str(r) + '.mp3'
-    tts.save(audio_file) # save as mp3
-    playsound.playsound(audio_file) # play the audio file
-    print(f"jarvis: {audio_string}") # print what app said
-    os.remove(audio_file) # remove audio file
+
+def talk(audio_string):
+    try:
+        something = pyttsx3.init()
+        something.setProperty('rate', 160)
+        something.say(audio_string)
+        something.runAndWait()
+    except Exception as e :
+        print(e)
+
+
 
 def respond(voice_data):
     # 1: greeting
@@ -171,6 +184,7 @@ def respond(voice_data):
     
     if there_exists(["news","what's the news","read the news","what is the news","read news"]):
         news = get_news()
+        console.log(news)
         speak(news)
 
     if there_exists(["what's the weather today","weather","today's weather"]):
