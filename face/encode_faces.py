@@ -24,6 +24,7 @@ engine = pt.init()
 # grab the paths to the input images in our dataset
 print("[INFO] quantifying faces...")
 imagePaths = list(paths.list_images(args["dataset"]))
+print(imagePaths)
 
 
 # initialize the list of known encodings and known names
@@ -45,6 +46,7 @@ for (i, imagePath) in enumerate(imagePaths):
 
 	# compute the facial embedding for the face
 	encodings = face_recognition.face_encodings(rgb, boxes)
+	print(encodings)
 
 	for encoding in encodings:
 		knownEncodings.append(encoding)

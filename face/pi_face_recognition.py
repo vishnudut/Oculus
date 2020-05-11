@@ -42,9 +42,10 @@ def speak(audio_string):
 	print(audio_string)
 	os.remove(audio_file)
 
-names = []
+
 # loop over frames from the video file stream
-while True:
+for i in range(60):
+	print(i)
 	frame = vs.read()
 	frame = imutils.resize(frame, width=500)
 	
@@ -63,7 +64,7 @@ while True:
 
 	# compute the facial embeddings for each face bounding box
 	encodings = face_recognition.face_encodings(rgb, boxes)
-	
+	names = []
 
 	# loop over the facial embeddings
 	for encoding in encodings:
