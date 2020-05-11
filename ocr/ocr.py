@@ -46,12 +46,11 @@ cv2.imwrite(filename, gray)
 text = pytesseract.image_to_string(Image.open(filename))
 os.remove(filename)
 
-#TO-DO : Additional processing such as spellchecking for OCR errors or NLP 
 print(text)
 speak(text)
  
 # show the output images
-# cv2.imshow("Image", image)
-# cv2.imshow("Output", gray)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+cv2.imshow("Image", image)
+cv2.imshow("Output", gray)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
