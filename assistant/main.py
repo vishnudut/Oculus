@@ -15,6 +15,12 @@ import pyttsx3
 import pprint
 import requests 
 
+# For playing music using spotify
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from pprint import pprint
+from time import sleep
+import spotipy.util as util
 
 
 class person:
@@ -26,6 +32,7 @@ def there_exists(terms):
     for term in terms:
         if term in voice_data:
             return True
+
 
 
 def speak(audio_string):
@@ -70,6 +77,32 @@ def get_news():
         news= news + i['title']
     
     return news
+
+
+#Function for playing music
+
+def play_song():
+    util.prompt_for_user_token('Oculus',
+                           'streaming',
+                           client_id='4876797530b244f1888967346b4ce1fd',
+                           client_secret='235a3ef81629464e8d75e1c57b5f4d65',
+                           redirect_uri='https://open.spotify.com/track/5JKU2tXiG3yvJtefNwe7ZQ')
+
+
+
+    scope = "user-read-playback-state,user-modify-playback-state"
+    sp = spotipy.Spotify(client_credentials_manager=SpotifyOAuth(scope=scope))
+
+    # Shows playing devices
+    res = sp.devices()
+    pprint(res)
+
+    # Change track
+    sp.start_playback(uris=['spotify:track:6gdLoMygLsgktydTQ71b15'])
+
+    # Change volume
+    sp.volume(100)
+
 
 
 r = sr.Recognizer() # initialise a recogniser
@@ -137,11 +170,11 @@ def respond(voice_data):
         speak(time)
 
     # 5: search google
-    if there_exists(["search for"]) and 'youtube' not in voice_data:
-        search_term = voice_data.split("for")[-1]
-        url = f"https://google.com/search?q={search_term}"
-        webbrowser.get().open(url)
-        speak(f'Here is what I found for {search_term} on google')
+    # if there_exists(["search for"]) and 'youtube' not in voice_data:
+    #     search_term = voice_data.split("for")[-1]
+    #     url = f"https://google.com/search?q={search_term}"
+    #     webbrowser.get().open(url)
+    #     speak(f'Here is what I found for {search_term} on google')
 
     # 6: search youtube
     if there_exists(["youtube"]):
@@ -192,6 +225,8 @@ def respond(voice_data):
         print(weather[0])
         speak(f'According the weather report it will be {weather[0]} and the temprature is {weather[1]}')
         
+    if there_exists(['play song','song','play music']):
+        play_song()
 
     if there_exists(["exit", "quit", "goodbye"]):
         speak("going offline")
