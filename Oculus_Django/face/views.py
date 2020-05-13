@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+
 from imutils.video import VideoStream
 from imutils.video import FPS
 import face_recognition
@@ -14,11 +15,7 @@ import cv2
 
 detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-def upload(request):
-    if request.method == 'POST':
-        uploaded_img = request.FILES["user_img"]
-        print(uploaded_img)
-    return render(request, 'upload.html')
+
 
 def compareFaces(request):
     print("[INFO] starting video stream...")
