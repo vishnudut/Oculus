@@ -21,9 +21,9 @@ def encoding(request):
     print(name)
     print(data)
     imagebits = data.read()
-    print(imagebits)
+    #print(imagebits)
     uti_formate = np.fromstring(imagebits,np.uint8)
-    print(uti_formate)
+    #print(uti_formate)
     img = cv2.imdecode(uti_formate, cv2.IMREAD_COLOR)
 
     rgb = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -44,4 +44,4 @@ def encoding(request):
     else:
         return HttpResponse('Failiure')
 
-    
+    #curl -i -X POST "Content-Type: multipart/form-data" -F "user_img=@/Users/vishnuvenkatesh/Code/Oculus/face/dataset/vishnu/test1.jpg" -F "user_name=vishnu" http://127.0.0.1:8000/encoding

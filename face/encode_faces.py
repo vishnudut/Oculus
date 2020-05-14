@@ -53,6 +53,7 @@ for (i, imagePath) in enumerate(imagePaths):
 		knownNames.append(name)
 
 print("[INFO] serializing encodings...")
+print(knownEncodings)
 data = {"encodings": knownEncodings, "names": knownNames}
 f = open(args["encodings"], "wb")
 f.write(pickle.dumps(data))
