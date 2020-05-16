@@ -217,7 +217,7 @@ def respond(voice_data):
     
     if there_exists(["news","what's the news","read the news","what is the news","read news"]):
         news = get_news()
-        console.log(news)
+        print(news)
         speak(news)
 
     if there_exists(["what's the weather today","weather","today's weather"]):
@@ -226,6 +226,7 @@ def respond(voice_data):
         speak(f'According the weather report it will be {weather[0]} and the temprature is {weather[1]}')
         
     if there_exists(['play song','song','play music']):
+        print('Playing songs from your playlist...')
         play_song()
 
     if there_exists(["exit", "quit", "goodbye"]):
@@ -236,6 +237,7 @@ def respond(voice_data):
 time.sleep(1)
 
 person_obj = person()
+print('How can I help you ?')
 while(1):
     voice_data = record_audio() # get the voice input
     respond(voice_data) # respond

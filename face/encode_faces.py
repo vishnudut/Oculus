@@ -46,14 +46,12 @@ for (i, imagePath) in enumerate(imagePaths):
 
 	# compute the facial embedding for the face
 	encodings = face_recognition.face_encodings(rgb, boxes)
-	print(encodings)
 
 	for encoding in encodings:
 		knownEncodings.append(encoding)
 		knownNames.append(name)
 
 print("[INFO] serializing encodings...")
-print(knownEncodings)
 data = {"encodings": knownEncodings, "names": knownNames}
 f = open(args["encodings"], "wb")
 f.write(pickle.dumps(data))
