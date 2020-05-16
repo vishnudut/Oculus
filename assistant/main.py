@@ -12,6 +12,8 @@ import wikipedia
 from newsapi import NewsApiClient
 import pyttsx3
 
+from face import *
+
 import pprint
 import requests 
 
@@ -88,18 +90,13 @@ def play_song():
                            client_secret='235a3ef81629464e8d75e1c57b5f4d65',
                            redirect_uri='https://open.spotify.com/track/5JKU2tXiG3yvJtefNwe7ZQ')
 
-
-
     scope = "user-read-playback-state,user-modify-playback-state"
     sp = spotipy.Spotify(client_credentials_manager=SpotifyOAuth(scope=scope))
-
     # Shows playing devices
     res = sp.devices()
     pprint(res)
-
     # Change track
     sp.start_playback(uris=['spotify:track:6gdLoMygLsgktydTQ71b15'])
-
     # Change volume
     sp.volume(100)
 
@@ -228,6 +225,10 @@ def respond(voice_data):
     if there_exists(['play song','song','play music']):
         print('Playing songs from your playlist...')
         play_song()
+
+    if there_exists(['who is that']):
+        person = whoIsThat()
+        speak(person[0])
 
     if there_exists(["exit", "quit", "goodbye"]):
         speak("going offline")
