@@ -20,6 +20,16 @@ import random
 # 	help="path to serialized db of facial encodings")
 # args = vars(ap.parse_args())
 
+# def speak(audio_string):
+	# 	tts = gTTS(text=audio_string, lang='en')
+	# 	r = random.randint(1,100000000)
+	# 	audio_file = 'audio-' + str(r) + '.mp3'
+	# 	tts.save(audio_file)
+	# 	playsound.playsound(audio_file)
+	# 	print(audio_string)
+	# 	os.remove(audio_file)
+
+
 def whoIsThat:
 	print("[INFO] loading encodings + face detector...")
 	data = pickle.loads(open('encodings.pickle', "rb").read())
@@ -32,15 +42,6 @@ def whoIsThat:
 	vs = VideoStream(src=0).start()
 	time.sleep(2.0)
 	fps = FPS().start()
-
-	# def speak(audio_string):
-	# 	tts = gTTS(text=audio_string, lang='en')
-	# 	r = random.randint(1,100000000)
-	# 	audio_file = 'audio-' + str(r) + '.mp3'
-	# 	tts.save(audio_file)
-	# 	playsound.playsound(audio_file)
-	# 	print(audio_string)
-	# 	os.remove(audio_file)
 
 	names = []
 

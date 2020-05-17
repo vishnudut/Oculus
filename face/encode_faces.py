@@ -26,7 +26,6 @@ print("[INFO] quantifying faces...")
 imagePaths = list(paths.list_images(args["dataset"]))
 print(imagePaths)
 
-
 # initialize the list of known encodings and known names
 knownEncodings = []
 knownNames = []
