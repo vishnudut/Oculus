@@ -12,6 +12,17 @@ import wikipedia
 from newsapi import NewsApiClient
 import pyttsx3
 
+from imutils.video import VideoStream
+from imutils.video import FPS
+import face_recognition
+import argparse
+import imutils
+import pickle
+import time
+import cv2
+
+
+
 import pprint
 import requests 
 
@@ -99,21 +110,81 @@ def play_song():
     sp.volume(100)
 
 
+def whoIsThat():
+    print("[INFO] loading encodings + face detector...")
+    data = pickle.loads(open('encodings.pickle',"rb").read())
+    print(data)
+    detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    
+    print("[INFO] starting video stream...")
+    vs = VideoStream(src=0).start()
+    time.sleep(2.0)
+    fps = FPS().start()
+
+    names= []
+
+    for i in range(60):
+        frame = vs.read()
+        frame = imutils.resize(frame, width=500)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        rects = detector.detectMultiScale(gray, scaleFactor=1.1,
+            minNeighbors=5, minSize=(30,30),
+            flags=cv2.CASCADE_SCALE_IMAGE)
+        
+        boxes = [(y,x+w,y+h,x) for (x,y,w,h) in rects]
+
+        encodings = face_recognition.face_encodings(rgb,boxes)
+
+        for encoding in encodings:
+            matches = face_recognition.compare_faces(data["encodings"],encoding)
+            name = "Unkown"
+
+            if True in matches:
+                matchedIdxs = [i for (i,b) in enumerate(matches) if b]
+                counts = {}
+
+                for i in matchedIdxs:
+                    name = data["names"][i]
+                    counts[name] = counts.get(name, 0) + 1
+
+                name = max(counts, key=counts.get)
+            names.append(name)
+
+        for ((top, right, bottom, left), name) in zip(boxes, names):
+            cv2.rectangle(frame, (left, top), (right, bottom),(0, 255, 0), 2)
+            y = top - 15 if top - 15 > 15 else top + 15
+            cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+
+        cv2.imshow("Frame", frame)
+        key = cv2.waitKey(1) & 0xFF
+
+        if key == ord("q"):
+            break
+
+        fps.update()
+
+    fps.stop()
+    print("It's ", names[0])
+    cv2.destroyAllWindows()
+    vs.stop()
+    return names
 
 r = sr.Recognizer() # initialise a recogniser
 # listen for audio and convert it to text:
 def record_audio(ask=False):
     with sr.Microphone() as source: # microphone as source
         if ask:
-            speak(ask)
+            talk(ask)
         audio = r.listen(source)  # listen for the audio via source
         voice_data = ''
         try:
             voice_data = r.recognize_google(audio)  # convert audio to text
         except sr.UnknownValueError: # error: recognizer does not understand
-            speak('I did not get that')
+            talk('I did not get that')
         except sr.RequestError:
-            speak('Sorry, the service is down') # error: recognizer is not connected
+            talk('Sorry, the service is down') # error: recognizer is not connected
         print(f">> {voice_data.lower()}") # print what user said
         return voice_data.lower()
 
@@ -135,23 +206,23 @@ def respond(voice_data):
     if there_exists(['hey','hi','hello']):
         greetings = [f"hey, how can I help you {person_obj.name}", f"hey, what's up? {person_obj.name}", f"I'm listening {person_obj.name}", f"how can I help you? {person_obj.name}", f"hello {person_obj.name}"]
         greet = greetings[random.randint(0,len(greetings)-1)]
-        speak(greet)
+        talk(greet)
 
     # 2: name
     if there_exists(["what is your name","what's your name","tell me your name"]):
         if person_obj.name:
-            speak("my name is jarvis")
+            talk("my name is jarvis")
         else:
-            speak("my name is jarvis. what's your name?")
+            talk("my name is jarvis. what's your name?")
 
     if there_exists(["my name is"]):
         person_name = voice_data.split("is")[-1].strip()
-        speak(f"okay, i will remember that {person_name}")
+        talk(f"okay, i will remember that {person_name}")
         person_obj.setName(person_name) # remember name in person object
 
     # 3: greeting
     if there_exists(["how are you","how are you doing"]):
-        speak(f"I'm very well, thanks for asking {person_obj.name}")
+        talk(f"I'm very well, thanks for asking {person_obj.name}")
 
     # 4: time
     if there_exists(["what's the time","tell me the time","what time is it"]):
@@ -162,21 +233,21 @@ def respond(voice_data):
         #     hours = time[0]
         # minutes = time[1]
         # time = f'{hours} {minutes}'
-        speak(time)
+        talk(time)
 
     # 5: search google
     # if there_exists(["search for"]) and 'youtube' not in voice_data:
     #     search_term = voice_data.split("for")[-1]
     #     url = f"https://google.com/search?q={search_term}"
     #     webbrowser.get().open(url)
-    #     speak(f'Here is what I found for {search_term} on google')
+    #     talk(f'Here is what I found for {search_term} on google')
 
     # 6: search youtube
     if there_exists(["youtube"]):
         search_term = voice_data.split("for")[-1]
         url = f"https://www.youtube.com/results?search_query={search_term}"
         webbrowser.get().open(url)
-        speak(f'Here is what I found for {search_term} on youtube')
+        talk(f'Here is what I found for {search_term} on youtube')
 
     if there_exists(["game"]):
         voice_data = record_audio("choose among rock paper or scissor")
@@ -186,47 +257,51 @@ def respond(voice_data):
         pmove=voice_data
         
 
-        speak("The computer chose " + cmove)
-        speak("You chose " + pmove)
+        talk("The computer chose " + cmove)
+        talk("You chose " + pmove)
         if pmove==cmove:
-            speak("the match is draw")
+            talk("the match is draw")
         elif pmove== "rock" and cmove== "scissor":
-            speak("Player wins")
+            talk("Player wins")
         elif pmove== "rock" and cmove== "paper":
-            speak("Computer wins")
+            talk("Computer wins")
         elif pmove== "paper" and cmove== "rock":
-            speak("Player wins")
+            talk("Player wins")
         elif pmove== "paper" and cmove== "scissor":
-            speak("Computer wins")
+            talk("Computer wins")
         elif pmove== "scissor" and cmove== "paper":
-            speak("Player wins")
+            talk("Player wins")
         elif pmove== "scissor" and cmove== "rock":
-            speak("Computer wins")
+            talk("Computer wins")
 
 
     if there_exists(["what is"]):
         text = record_audio("What do you need the definition of")
         wiki = wikipedia.summary(text, sentences=2)
-        speak('here is what i found' +wiki)
+        talk('here is what i found' +wiki)
 
     
     if there_exists(["news","what's the news","read the news","what is the news","read news"]):
         news = get_news()
         print(news)
-        speak(news)
+        talk(news)
 
     if there_exists(["what's the weather today","weather","today's weather"]):
         weather = get_weather()
         print(weather[0])
-        speak(f'According the weather report it will be {weather[0]} and the temprature is {weather[1]}')
+        talk(f'According the weather report it will be {weather[0]} and the temprature is {weather[1]}')
         
     if there_exists(['play song','song','play music']):
         print('Playing songs from your playlist...')
         play_song()
 
+    if there_exists(['who is that']):
+        person = whoIsThat()
+        print(person)
+        talk(person[0])
 
     if there_exists(["exit", "quit", "goodbye"]):
-        speak("going offline")
+        talk("going offline")
         exit()
 
 
