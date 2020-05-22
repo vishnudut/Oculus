@@ -11,7 +11,7 @@ import random
 
 # parse the argument
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--image", required = True)
+# parser.add_argument("-i", "--image", required = True)
 parser.add_argument("-p", "--preprocess", type = str, default = "thresh")
 args = vars(parser.parse_args())
 
@@ -25,7 +25,7 @@ def speak(audio_string):
 	os.remove(audio_file)
 
 # load the example image and convert it to grayscale
-image = cv2.imread(args["image"])
+image = cv2.imread('demo.png')
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
  
 # check preprocess to apply thresholding on the image
