@@ -123,7 +123,7 @@ def whoIsThat():
 
     names= []
 
-    for i in range(60):
+    for i in range(30):
         frame = vs.read()
         frame = imutils.resize(frame, width=500)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -297,8 +297,8 @@ def respond(voice_data):
 
     if there_exists(['who is that']):
         person = whoIsThat()
-        print(person)
-        talk(person[0])
+        response = "It's " + person[0]
+        talk(response)
 
     if there_exists(["exit", "quit", "goodbye"]):
         talk("going offline")
