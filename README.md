@@ -4,4 +4,4 @@ Smart Glass to help Visually Impaired people.
 
 
 
-![Untitled Diagram](/Oculus/images/Architecture.jpg)
+![System Architecture](images/Architecture.jpg)
