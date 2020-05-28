@@ -25,13 +25,11 @@ Everything will be returned to the user via earphones/headphones. This is achiev
 
 
 
-NOTE: 
-
-If you are willing to test this on your system the working version of the system is availble inside testAssitant folder. Run main.py to use it. 
+**NOTE:** If you are willing to test this on your system the working version of the system is availble inside testAssitant folder. Run main.py to use it. 
 
 
 
-Package/ Libraries/ Tech Used
+**Package/ Libraries/ Tech Used**
 
 - OpenCV
 - Tesseract OCR
@@ -44,7 +42,7 @@ Package/ Libraries/ Tech Used
 
 
 
-Future Improvements
+**Future Improvements**
 
 - [ ] Adding GPS module to get users location
 - [ ] Process the data retrieved from each API
