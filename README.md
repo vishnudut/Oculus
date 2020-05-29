@@ -15,7 +15,7 @@ The assistant currently provides the following features:
 
 
 
-Everything will be returned to the user via earphones/headphones. This is achieved with the help of gTTS.
+Everything will be returned to the user via earphones/headphones. This is achieved with the help of gTTS.  
 
 
 
