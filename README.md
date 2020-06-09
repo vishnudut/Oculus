@@ -39,6 +39,7 @@ Everything will be returned to the user via earphones/headphones. This is achiev
 - Speech Recognition
 - gTTS
 - Open Weather API
+- Face Recognition
 
 
 
