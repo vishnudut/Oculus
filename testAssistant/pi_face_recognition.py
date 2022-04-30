@@ -23,7 +23,7 @@ import random
 
 
 
-def whoIsThat:
+def whoIsThat():
 	print("[INFO] loading encodings + face detector...")
 	data = pickle.loads(open('encodings.pickle', "rb").read())
 	print(data)

@@ -3,35 +3,21 @@ import playsound # to play an audio file
 from gtts import gTTS # google text to speech
 import random
 from time import ctime # get time details
-import webbrowser # open browser
-import ssl
-import certifi
 import time
-import os # to remove created audio files
-import wikipedia
-from newsapi import NewsApiClient
-import pyttsx3
+import os # to remove created audio files 
 
 from imutils.video import VideoStream
 from imutils.video import FPS
 import face_recognition
-import argparse
+
 import imutils
 import pickle
 import time
 import cv2
 
-
-
-import pprint
-import requests 
-
-# For playing music using spotify
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-from pprint import pprint
 from time import sleep
-import spotipy.util as util
+from ocr import img_to_text
+
 
 
 class person:
@@ -56,66 +42,11 @@ def speak(audio_string):
     os.remove(audio_file) # remove audio file
 
 
-def get_weather():
-    api_address='http://api.openweathermap.org/data/2.5/weather?appid=74c70cbf155ba874808f72c02696bad9&q='
-    city = 'Chennai'
-    url = api_address + city
-    json_data = requests.get(url).json()
-    format_add = json_data['weather'][0]['description'];
-    current_temp = json_data['main']['temp']
-    temp_c = current_temp - 273.15
-    temp_c_str = str(int(temp_c)) + ' degree Celsius '
-    print(temp_c)
-    print(format_add)
-    return format_add, temp_c_str
-
-
-def get_news():
-    url = 'https://newsapi.org/v2/everything?'
-    news_api = '2689061e28344f46bde8a8dbcfdb119b'
-    parameters = {
-        'q': 'big data', # query phrase
-        'pageSize': 20,  # maximum is 100
-        'apiKey': news_api # your own API key
-    }
-
-    response = requests.get(url, params=parameters)
-    # Convert the response to JSON format and pretty print it
-    response_json = response.json()
-    # pprint.pprint(response_json)
-    news = ''
-    for i in response_json['articles']:
-        news= news + i['title']
-    
-    return news
-
-
-#Function for playing music
-
-def play_song():
-    util.prompt_for_user_token('Oculus',
-                           'streaming',
-                           client_id='4876797530b244f1888967346b4ce1fd',
-                           client_secret='235a3ef81629464e8d75e1c57b5f4d65',
-                           redirect_uri='https://open.spotify.com/track/5JKU2tXiG3yvJtefNwe7ZQ')
-
-    scope = "user-read-playback-state,user-modify-playback-state"
-    sp = spotipy.Spotify(client_credentials_manager=SpotifyOAuth(scope=scope))
-    # Shows playing devices
-    res = sp.devices()
-    pprint(res)
-    # Change track
-    sp.start_playback(uris=['spotify:track:6gdLoMygLsgktydTQ71b15'])
-    # Change volume
-    sp.volume(100)
-
-
 def whoIsThat():
     print("[INFO] loading encodings + face detector...")
     data = pickle.loads(open('encodings.pickle',"rb").read())
-    #print(data)
+    print("what data is",data)
     detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    
     print("[INFO] starting video stream...")
     vs = VideoStream(src=0).start()
     time.sleep(2.0)
@@ -188,17 +119,35 @@ def record_audio(ask=False):
         print(f">> {voice_data.lower()}") # print what user said
         return voice_data.lower()
 
-# get string and make a audio file to be played
+# screenshot method
+def take_screenshot ():
+    cam = cv2.VideoCapture(0)
+    cv2.namedWindow("screen capture")
 
-def talk(audio_string):
-    try:
-        something = pyttsx3.init()
-        something.setProperty('rate', 160)
-        something.say(audio_string)
-        something.runAndWait()
-    except Exception as e :
-        print(e)
+    img_counter =0
+    while(True):
+        ret,frame = cam.read()
+        if not ret:
+            print("failed to grab frame")
+            break
+        cv2.imshow("test",frame)
+        k = cv2.waitKey(1)
+    # when escape key is hit
+        if k%256 == 27:
+            print("escape hit")
+            break
+    # when space bar is hit
+        elif k%256 == 32 :
+            img_name = "opencv_frame_{}.png".format(img_counter)
+            cv2.imwrite(img_name,frame)
+            print("screenshot taken")
+            img_counter+=1
 
+    cam.release()
+    cv2.destroyAllWindows()
+    print("filename",img_name)
+    img_to_text(img_name)
+    return img_name
 
 
 def respond(voice_data):
@@ -227,79 +176,19 @@ def respond(voice_data):
     # 4: time
     if there_exists(["what's the time","tell me the time","what time is it"]):
         time = ctime()
-        # if time[0] == "00":
-        #     hours = '12'
-        # else:
-        #     hours = time[0]
-        # minutes = time[1]
-        # time = f'{hours} {minutes}'
         speak(time)
-
-    # 5: search google
-    # if there_exists(["search for"]) and 'youtube' not in voice_data:
-    #     search_term = voice_data.split("for")[-1]
-    #     url = f"https://google.com/search?q={search_term}"
-    #     webbrowser.get().open(url)
-    #     speak(f'Here is what I found for {search_term} on google')
-
-    # 6: search youtube
-    if there_exists(["youtube"]):
-        search_term = voice_data.split("for")[-1]
-        url = f"https://www.youtube.com/results?search_query={search_term}"
-        webbrowser.get().open(url)
-        speak(f'Here is what I found for {search_term} on youtube')
-
-    if there_exists(["game"]):
-        voice_data = record_audio("choose among rock paper or scissor")
-        moves=["rock", "paper", "scissor"]
-    
-        cmove=random.choice(moves)
-        pmove=voice_data
-        
-
-        speak("The computer chose " + cmove)
-        speak("You chose " + pmove)
-        if pmove==cmove:
-            speak("the match is draw")
-        elif pmove== "rock" and cmove== "scissor":
-            speak("Player wins")
-        elif pmove== "rock" and cmove== "paper":
-            speak("Computer wins")
-        elif pmove== "paper" and cmove== "rock":
-            speak("Player wins")
-        elif pmove== "paper" and cmove== "scissor":
-            speak("Computer wins")
-        elif pmove== "scissor" and cmove== "paper":
-            speak("Player wins")
-        elif pmove== "scissor" and cmove== "rock":
-            speak("Computer wins")
-
-
-    if there_exists(["what is"]):
-        text = record_audio("What do you need the definition of")
-        wiki = wikipedia.summary(text, sentences=2)
-        speak('here is what i found' +wiki)
-
-    
-    if there_exists(["news","what's the news","read the news","what is the news","read news"]):
-        news = get_news()
-        print(news)
-        speak(news)
-
-    if there_exists(["what's the weather today","weather","today's weather"]):
-        weather = get_weather()
-        print(weather[0])
-        speak(f'According the weather report it will be {weather[0]} and the temprature is {weather[1]}')
-        
-    if there_exists(['play song','song','play music']):
-        print('Playing songs from your playlist...')
-        play_song()
-
+    # 5 : face recognition
     if there_exists(['who is that']):
         person = whoIsThat()
         response = "It's " + person[0]
         speak(response)
-
+    # take screennshot and capture convert image into text
+    if there_exists(["take screenshot"]):
+        img_name = take_screenshot()
+        speak("press spacebar to take screenshot")
+        print(img_name)
+        
+    # 6 :exit
     if there_exists(["exit", "quit", "goodbye"]):
         speak("going offline")
         exit()
@@ -311,4 +200,5 @@ person_obj = person()
 print('How can I help you ?')
 while(1):
     voice_data = record_audio() # get the voice input
+    print(voice_data)
     respond(voice_data) # respond

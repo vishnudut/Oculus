@@ -30,7 +30,7 @@ def speak(audio_string):
 		os.remove(audio_file)
 
 
-def whoIsThat:
+def whoIsThat():
 	print("[INFO] loading encodings + face detector...")
 	data = pickle.loads(open('encodings.pickle', "rb").read())
 	print(data)

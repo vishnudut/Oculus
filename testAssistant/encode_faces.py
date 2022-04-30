@@ -24,7 +24,7 @@ engine = pt.init()
 # grab the paths to the input images in our dataset
 print("[INFO] quantifying faces...")
 imagePaths = list(paths.list_images(args["dataset"]))
-print(imagePaths)
+print("what is image",imagePaths)
 
 # initialize the list of known encodings and known names
 knownEncodings = []
